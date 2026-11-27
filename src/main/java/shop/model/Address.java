@@ -2,15 +2,12 @@ package shop.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class Address {
 
@@ -25,4 +22,11 @@ public class Address {
 
     @Column(name = "street_address", nullable = false)
     private String streetAddress;
+
+    public Address(String country, String city, String county, String streetAddress) {
+        this.country = ModelValidation.requiredText(country, 100, "Country");
+        this.city = ModelValidation.requiredText(city, 100, "City");
+        this.county = ModelValidation.optionalText(county, 100, "County");
+        this.streetAddress = ModelValidation.requiredText(streetAddress, 255, "Street address");
+    }
 }

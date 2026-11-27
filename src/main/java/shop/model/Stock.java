@@ -8,21 +8,21 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "stock")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Stock {
 
     @EmbeddedId
-    private StockId id;
+    private StockId id = new StockId();
 
     @MapsId("productId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -34,18 +34,47 @@ public class Stock {
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
-    @Setter
     @Column(nullable = false)
-    private Integer quantity;
+    private int quantity;
 
-    public Stock(Product product, Location location, Integer quantity) {
-        this.product = Objects.requireNonNull(product);
-        this.location = Objects.requireNonNull(location);
-        this.quantity = Objects.requireNonNull(quantity);
+    @Version
+    @Column(nullable = false)
+    private Long version;
 
-        this.id = new StockId(
-                Objects.requireNonNull(product.getId()),
-                Objects.requireNonNull(location.getId())
-        );
+    public Stock(Product product, Location location, int quantity) {
+        this.product = Objects.requireNonNull(product, "Product is required");
+        this.location = Objects.requireNonNull(location, "Location is required");
+
+        if (quantity < 0) {
+            throw new IllegalArgumentException(
+                    "Initial stock cannot be negative"
+            );
+        }
+
+        this.quantity = quantity;
+    }
+
+    public void decreaseQuantity(int amount) {
+        validateAmount(amount);
+
+        if (amount > quantity) {
+            throw new IllegalStateException("Insufficient stock");
+        }
+
+        quantity -= amount;
+    }
+
+    public void increaseQuantity(int amount) {
+        validateAmount(amount);
+
+        quantity = Math.addExact(quantity, amount);
+    }
+
+    private static void validateAmount(int amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException(
+                    "Amount must be positive"
+            );
+        }
     }
 }

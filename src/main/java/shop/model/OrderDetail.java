@@ -21,7 +21,7 @@ import java.util.Objects;
 public class OrderDetail {
 
     @EmbeddedId
-    private OrderDetailId id;
+    private OrderDetailId id = new OrderDetailId();
 
     @MapsId("orderId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -38,14 +38,14 @@ public class OrderDetail {
     private Location shippedFrom;
 
     @Column(nullable = false)
-    private Integer quantity;
+    private int quantity;
 
-    public OrderDetail(Order order, Product product,
+    OrderDetail(Order order, Product product,
                        Location shippedFrom, int quantity) {
 
-        this.order = Objects.requireNonNull(order);
-        this.product = Objects.requireNonNull(product);
-        this.shippedFrom = Objects.requireNonNull(shippedFrom);
+        this.order = Objects.requireNonNull(order, "Order is required");
+        this.product = Objects.requireNonNull(product, "Product is required");
+        this.shippedFrom = Objects.requireNonNull(shippedFrom, "Shipping location is required");
 
         if (quantity <= 0) {
             throw new IllegalArgumentException(
@@ -54,10 +54,5 @@ public class OrderDetail {
         }
 
         this.quantity = quantity;
-
-        this.id = new OrderDetailId(
-                Objects.requireNonNull(order.getId()),
-                Objects.requireNonNull(product.getId())
-        );
     }
 }
