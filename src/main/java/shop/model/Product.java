@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 
 @Getter
@@ -66,7 +67,7 @@ public class Product extends BaseEntity {
         if (normalized.scale() > 2) {
             throw new IllegalArgumentException("Price must have at most two decimal places");
         }
-        this.price = normalized.setScale(2);
+        this.price = normalized.setScale(2, RoundingMode.UNNECESSARY);
     }
 
     public void setWeight(Double weight) {

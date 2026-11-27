@@ -13,8 +13,8 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<properties>
 		<java.version>21</java.version>
-		<!-- Security patches beyond the current Spring Boot BOM. Remove once a
-		     Boot release manages these (or newer) versions. -->
+
+		<!-- Security updates -->
 		<tomcat.version>11.0.29</tomcat.version>
 		<postgresql.version>42.7.15</postgresql.version>
 	</properties>
